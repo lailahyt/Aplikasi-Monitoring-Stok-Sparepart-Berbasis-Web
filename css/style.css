@@ -1,0 +1,1234 @@
+<style>
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background 0.4s, color 0.4s;
+      margin: 0;
+    }
+
+    /* ✅ cegah body ikut scroll */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Dark mode */
+    body.dark-mode {
+      background: #181a1b;
+      color: #e5e5e5;
+    }
+    body.dark-mode .card-container,
+    body.dark-mode .stylish-card {
+      background: #242526;
+      color: #e5e5e5;
+      box-shadow: 0 4px 15px rgba(255,255,255,0.05);
+    }
+    body.dark-mode .stylish-header {
+      background: linear-gradient(135deg, #1f1f1f, #333);
+    }
+    body.dark-mode .navbar {
+      background: linear-gradient(90deg, #000, #222);
+    }
+    body.dark-mode #sidebar {
+      background: #111;
+    }
+    body.dark-mode #sidebar ul li a {
+      color: #bbb;
+    }
+    body.dark-mode #sidebar ul li a:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg,rgba(52, 58, 64, 1), rgba(33, 37, 41, 1));
+    }
+    .navbar-brand { color: #fff !important; font-weight: bold; }
+    .navbar-text { color: #ddd; margin-right: 15px; }
+
+    /* Sidebar */
+    #sidebar {
+      min-width: 230px;
+      max-width: 230px;
+      background: #212529;
+      color: #fff;
+      position: fixed;
+      height: 100%;
+      left: 0; 
+      top: 0;
+      padding-top: 60px;
+      z-index: 1000;
+	  margin-left: -230px; /* <--- UBAH INI: Sidebar default-nya tertutup */
+      transition: margin-left 0.5s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 999;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.3);
+    }
+
+    #sidebar.active { margin-left: 0; }
+
+    /* Daftar menu yang bisa di-scroll */
+#sidebar .components {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 30px;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #212529;
+}
+
+/* Scrollbar khusus Chrome/Edge */
+#sidebar .components::-webkit-scrollbar {
+  width: 6px;
+}
+#sidebar .components::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 3px;
+}
+#sidebar .components::-webkit-scrollbar-track {
+  background: #212529;
+}
+
+
+    /* List item */
+#sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#sidebar ul li {
+  margin: 0;
+}
+
+/* Link menu */
+#sidebar ul li a {
+  display: flex;
+  align-items: center;
+  color: #cfd8dc; /* abu-abu muda */
+  gap: 10px;               /* jarak icon & teks */
+  font-size: 15px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+/* Icon dalam menu */
+#sidebar ul li a i {
+  text-align: center;
+  font-size: 16px;
+  width: 20px;   
+}
+
+/* Hover effect */
+#sidebar ul li a:hover {
+  background: #343a40;
+  color: #ffffff;
+  border-left: 4px solid #fff;
+}
+
+/* Menu aktif */
+#sidebar ul li.active > a {
+  background: #343a40;
+  color: #ffffff;
+  font-weight: 600;
+  border-left: 3px solid #0dcaf0; /* cyan */
+
+}
+
+/* Dropdown menu */
+#sidebar ul ul {
+  padding-left: 10px;
+  background: #2a2e33;
+  display: none;
+  
+}
+
+#sidebar ul ul li a {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #b0bec5;
+  border-left: 2px solid transparent;
+  transition: all 0.3s;
+
+}
+
+#sidebar ul ul li a:hover {
+  background: #3b4147;
+  color: #fff;
+  border-left: 4px solid #fff;
+}
+
+/* Saat aktif */
+#sidebar ul li.open > ul {
+  display: block;
+  animation: slideDown 0.5s ease;
+}
+
+#sidebar .dropdown-toggle .chevron {
+  margin-left: auto; 
+  transition: transform 0.5s ease;
+}
+
+/* Saat dropdown aktif → panah ke kiri */
+#sidebar li.open .dropdown-toggle .chevron {
+  transform: rotate(90deg);
+}
+
+/* Hilangkan caret bawaan bootstrap */
+#sidebar .dropdown-toggle::after {
+  display: none !important;
+}
+
+ /* ✅ Content scrollable */
+    #content {
+      position: absolute;
+      top: 70px;   /* jarak dari navbar */
+      left: 0; /* jarak dari sidebar */
+      right: 0;
+      bottom: 0;
+      padding: 20px;
+      overflow: auto;
+      background: #fafafa;
+      transition: left 0.5s ease;
+    }
+    #sidebar.active + #content { left: 230px; }
+
+    /* Darkmode toggle button */
+    .btn-darkmode {
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .btn-darkmode:hover {
+      transform: rotate(20deg) scale(1.1);
+    }
+
+    .navbar-toggler {
+      border: none;
+      outline: none;
+    }
+    .navbar-toggler .animated-icon {
+      width: 25px;
+      height: 20px;
+      position: relative;
+      margin: 0;
+      transition: .5s ease-in-out;
+      cursor: pointer;
+    }
+    .navbar-toggler .animated-icon span {
+      display: block;
+      position: absolute;
+      height: 3px;
+      width: 100%;
+      background: #fff;
+      border-radius: 9px;
+      opacity: 1;
+      left: 0;
+      transform: rotate(0deg);
+      transition: .25s ease-in-out;
+    }
+    .navbar-toggler .animated-icon span:nth-child(1) { top: 0px; }
+    .navbar-toggler .animated-icon span:nth-child(2) { top: 8px; }
+    .navbar-toggler .animated-icon span:nth-child(3) { top: 16px; }
+    .navbar-toggler.open .animated-icon span:nth-child(1) {
+      top: 8px; transform: rotate(135deg);
+    }
+    .navbar-toggler.open .animated-icon span:nth-child(2) {
+      opacity: 0; left: -60px;
+    }
+    .navbar-toggler.open .animated-icon span:nth-child(3) {
+      top: 8px; transform: rotate(-135deg);
+    }
+
+    /* Card Container */
+    .card-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 20px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  /* Styling untuk toolbar search */
+  .toolbar-search-only {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 15px;
+  }
+
+  /* Styling untuk Show entries */
+  .dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 500;
+    color: #495057;
+  }
+
+  .dataTables_length select {
+    padding: 6px 30px 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .dataTables_length select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  /* Styling untuk Search Input */
+  .dataTables_filter {
+    display: flex;
+    align-items: center;
+  }
+
+  .dataTables_filter label {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .dataTables_filter input {
+    padding: 8px 12px 8px 35px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 250px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    background-color: #fff;
+  }
+
+  .dataTables_filter input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  /* Icon search */
+  .dataTables_filter label::before {
+    content: "\f002";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 12px;
+    color: #6c757d;
+    z-index: 1;
+  }
+
+    /* Button animation */
+    .btn-animate {
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .btn-animate:after {
+      content: "";
+      position: absolute;
+      background: rgba(255,255,255,0.5);
+      display: block;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: -100%;
+      transition: all 0.3s;
+    }
+    .btn-animate:hover:after {
+      left: 0;
+    }
+
+  /* Card Styling */
+  .stylish-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    background: #fff;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.6s ease;
+  }
+  .stylish-card.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Card Header */
+  .stylish-header {
+    background: linear-gradient(135deg, #343a40, #495057);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px 20px;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Card Body */
+  .stylish-body {
+    padding: 20px;
+    background: #fdfdfd;
+  }
+
+  /* ✅ Scroll horizontal untuk tabel */
+.table-responsive-custom {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+}
+
+/* Opsional: agar scrollbar rapi */
+.table-responsive-custom::-webkit-scrollbar {
+  height: 5px;
+}
+.table-responsive-custom::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 4px;
+}
+.table-responsive-custom::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+.toolbar-custom {
+    display: none;
+}
+
+  /* Overlay */
+.overlay {
+  display: none; 
+  position: fixed; 
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(6px);
+  z-index: 1050;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+#overlayForm .card {
+  max-width: 800px; /* biar muat 2 kolom tanpa terlalu lebar */
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+#overlayForm .form-control {
+  border-radius: 6px;
+}
+
+#overlayForm label {
+  font-weight: 500;
+}
+
+
+/* Card form */
+.overlay-content {
+  width: 500px;
+  max-width: 90%;
+  animation: slideDown 0.4s ease;
+  border-radius: 15px;
+}
+
+/* Animasi */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+/*@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}*/
+/* Animasi dropdown */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ Responsif: Sidebar muncul dari atas menutupi layar di tampilan mobile */
+/* ✅ Responsif: Sidebar muncul dari atas menutupi layar di tampilan mobile */
+@media (max-width: 640px) {
+
+  /* Tombol burger muncul */
+.navbar {
+    position: fixed; /* Penting agar navbar tetap di atas */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10002; /* Lebih tinggi dari navbar-toggler */
+  }
+  
+  .navbar .navbar-toggler {
+      margin-left: auto; 
+  }
+   
+    .navbar-brand{
+        text-align: center;
+    }
+
+    .navbar .btn-danger {
+        display: none !important;
+    }
+
+  #sidebar {
+    position: fixed;          /* Ubah dari absolute ke fixed */
+    top: 0;
+    left: 0;                  /* Ubah dari right: 0 ke left: 0 */
+    width: 100%;
+    height: 100vh;
+    background: #212529;
+    color: #fff;
+    z-index: 3000;            /* Tingkatkan z-index agar di atas elemen lain */
+    display: flex;            /* Tambahkan display: flex */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-100%);
+	opacity: 0 !important;
+    pointer-events: none !important;
+    transition: all 0.4s ease; 
+    /* RESET PROPERTI DESKTOP */
+	margin-left: 0 !important;
+    min-width: 100% !important;
+    max-width: 100% !important;/* Hapus efek geser margin desktop */
+
+  }
+
+#sidebar.active {
+    /* PENTING: Ini adalah kondisi terbuka di mobile */
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+   
+  /* Sidebar Components */
+#sidebar ul.components {
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+/* ===== Dropdown Styling ===== */
+
+/* Sembunyikan submenu secara default */
+#sidebar ul.components li ul {
+  display: none;
+  flex-direction: column;
+  padding-left: 40px; /* sedikit indent untuk submenu */
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Tampilkan submenu jika parent .open */
+#sidebar ul.components li.open > ul {
+  display: flex;
+}
+
+/* Link di dalam submenu */
+#sidebar ul.components li ul li a {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  padding: 10px 18px;
+  border-bottom: none;
+  opacity: 0.9;
+}
+
+#sidebar ul.components li ul li a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  letter-spacing: 1px;
+}
+
+/* Chevron (ikon panah dropdown) */
+.chevron {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.8;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Rotasi saat dropdown terbuka */
+#sidebar ul.components li.open > a .chevron {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* Untuk menandai menu aktif (opsional) */
+#sidebar ul.components li.active > a {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+    
+  #content {
+    position: fixed !important; /* <--- Tambahkan ini agar konten tidak berinteraksi dengan sidebar */
+    top: 70px;
+    left: 0 !important; /* <--- Pastikan left kembali ke 0 */
+    right: 0;
+    bottom: 0;
+    padding: 15px;
+    transition: none !important; /* <--- Hapus transisi left desktop */
+    /* Hapus overflow:auto jika Anda ingin halaman utama yang scroll, bukan konten */
+}
+    
+.table-responsive-custom {
+    border-radius: 8px;
+     margin-top: 4px !important; 
+}
+    .table-responsive-custom::after {
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.table {
+    font-size: 14px;
+    min-width: 650px; /* agar bisa discroll horizontal */
+}
+
+.table th,
+.table td {
+    padding: 8px 10px;
+}
+
+.aksi-buttons {
+    flex-direction: column;
+    gap: 5px;
+}
+
+.aksi-buttons .btn {
+    width: 100%;
+    font-size: 11px;
+    padding: 6px;
+}
+
+    /* Target 1: Sembunyikan kontainer Show entries (Diberi !important untuk mengatasi konflik) */
+    .dataTables_wrapper .dataTables_length {
+        display: none !important; 
+        /* Fallback tambahan */
+        visibility: hidden !important; 
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Target 2: Pastikan elemen select di dalam length juga tersembunyi */
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_length label {
+        display: none !important;
+    }
+    
+/* Pastikan area tabel tetap scrollable */
+.dataTables_wrapper {
+  position: relative;
+  overflow-x: auto;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+
+/* Hilangkan bawaan posisi kanan dari filter */
+.ml-auto {
+  display: none !important;
+}
+
+/* === AREA TOOLBAR (Tombol Tambah + Search) === */
+.toolbar-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  width: 100%;
+  padding: 2px 0 4px 0 !important;
+  margin-bottom: 5px !important;
+}
+
+/* Tombol Tambah Data */
+.toolbar-custom .btn-tambah-data {
+  flex: 1;
+  font-size: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Search bar */
+.toolbar-custom .dataTables_filter {
+  flex: 1;
+  order: -1; /* 🔥 pindahkan ke kiri */
+  margin: 0;
+  width: 100%;
+}
+
+    .dataTables_filter {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+    
+.toolbar-custom .dataTables_filter label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  gap: 8px;
+  font-size: 0; /* sembunyikan teks "Search:" */
+}
+
+.toolbar-custom .dataTables_filter input {
+  flex: 1;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Fokus input */
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: #333;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+}
+    
+    /* === Sticky search bar tanpa tombol tambah === */
+/* === Perbaikan agar tabel tidak tertutup search bar === */
+.toolbar-search-only {
+  position: sticky;
+  top: 0; /* tinggi navbar */
+  z-index: 100;
+  padding: 0 10px;
+  margin-bottom: 6px; /* beri jarak agar tabel tidak tertutup */
+}
+
+/* Tambahkan jarak kecil di atas tabel */
+.dataTables_wrapper table.dataTable {
+  margin-top: 6px !important;
+}
+
+/* Hilangkan label "Search:" */
+.toolbar-search-only .dataTables_filter label {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  font-size: 0; /* sembunyikan teks Search */
+}
+
+/* Input search-nya */
+.toolbar-search-only .dataTables_filter input {
+  flex: 1;
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Efek fokus */
+.toolbar-search-only .dataTables_filter input:focus {
+  border-color: #333;
+  box-shadow: 0 0 4px rgba(0,0,0,0.15);
+}
+    
+    /* Card Styling */
+.stylish-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    background: #fff;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+.stylish-card.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Card Header */
+.stylish-header {
+    background: linear-gradient(135deg, #343a40, #495057);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 15px 20px;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Card Body */
+.stylish-body {
+    padding: 20px;
+    background: #fdfdfd;
+}
+    
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+    z-index: 10003 !important; 
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 190px 10px 20px 10px !important;
+  }   
+  
+  .overlay-content {
+    width: 90% !important;
+    max-width: 500px;
+    margin: 0;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 100px); 
+    flex-shrink: 0;
+  }
+  
+  .card-header {
+    background: #3b4147;
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 0.75rem 1rem;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  
+  .card-header h5 {
+    font-size: 1rem;
+    margin: 0;
+  }
+  
+  .card-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+  
+  .col-md-6 { 
+    flex: 0 0 100%; 
+    max-width: 100%; 
+  }
+  
+  .form-label { 
+    font-size: 0.9rem; 
+    margin-bottom: 4px; 
+    font-weight: 600; 
+    color: #333; 
+  }
+  
+  .form-control { 
+    border-radius: 8px; 
+    border: 1px solid #ccc; 
+    font-size: 0.9rem; 
+    padding: 10px 12px; 
+  }
+  
+  textarea.form-control { 
+    min-height: 70px; 
+  }
+  
+  .btn-primary { 
+    width: 100%; 
+    border-radius: 8px; 
+    padding: 10px; 
+    font-size: 0.95rem; 
+    font-weight: 600; 
+  }
+  
+  .mb-3 { 
+    margin-bottom: 0.9rem !important; 
+  }
+  
+  .d-flex.justify-content-center { 
+    padding-bottom: 0.5rem; 
+  }
+
+    
+  #overlayForm.overlay {
+    display: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    overflow-y: auto !important;
+    z-index: 10005 !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 75px 10px 20px 10px !important;
+  }
+
+  /* Tampilkan overlay ketika style display:flex ditambahkan via JavaScript */
+  #overlayForm.overlay[style*="display: flex"],
+  #overlayForm.overlay[style*="display:flex"] {
+    display: flex !important;
+  }
+
+  #overlayForm .overlay-content {
+    width: 95% !important;
+    max-width: 500px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: calc(100vh - 95px) !important;
+    flex-shrink: 0 !important;
+  }
+
+  #overlayForm .card-header {
+    background: #3b4147 !important;
+    color: white !important;
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    flex-shrink: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1 !important;
+  }
+
+  #overlayForm .card-header h5 {
+    font-size: 1rem !important;
+    margin: 0 !important;
+  }
+
+  #overlayForm .card-body {
+    padding: 1rem !important;
+    overflow-y: auto !important;
+    flex-grow: 1 !important;
+  }
+
+  #overlayForm .col-md-6 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  #overlayForm .form-group {
+    margin-bottom: 0.9rem !important;
+  }
+
+  #overlayForm label {
+    font-size: 0.9rem !important;
+    margin-bottom: 4px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+  }
+
+  #overlayForm .form-control {
+    border-radius: 8px !important;
+    border: 1px solid #ccc !important;
+    font-size: 0.9rem !important;
+    padding: 10px 12px !important;
+  }
+
+  #overlayForm .btn-primary {
+    width: 100% !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+  }
+
+  #overlayForm .text-center {
+    padding-bottom: 0.5rem !important;
+  }
+    
+    #editFormOverlay.overlay {
+    display: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    overflow-y: auto !important;
+    z-index: 10005 !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 75px 10px 20px 10px !important;
+  }
+
+  /* Tampilkan overlay ketika style display:flex ditambahkan via JavaScript */
+  #editFormOverlay.overlay[style*="display: flex"],
+  #editFormOverlay.overlay[style*="display:flex"] {
+    display: flex !important;
+  }
+
+  #editFormOverlay .overlay-content {
+    width: 95% !important;
+    max-width: 500px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: calc(100vh - 95px) !important;
+    flex-shrink: 0 !important;
+  }
+
+  #editFormOverlay .card-header {
+    background: #3b4147 !important;
+    color: white !important;
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    flex-shrink: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1 !important;
+  }
+
+  #editFormOverlay .card-header h5 {
+    font-size: 1rem !important;
+    margin: 0 !important;
+  }
+
+  #editFormOverlay .card-body {
+    padding: 1rem !important;
+    overflow-y: auto !important;
+    flex-grow: 1 !important;
+  }
+
+  #editFormOverlay .form-group {
+    margin-bottom: 0.9rem !important;
+  }
+
+  #editFormOverlay label {
+    font-size: 0.9rem !important;
+    margin-bottom: 4px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    display: block !important;
+  }
+
+  #editFormOverlay .form-control {
+    border-radius: 8px !important;
+    border: 1px solid #ccc !important;
+    font-size: 0.9rem !important;
+    padding: 10px 12px !important;
+    width: 100% !important;
+  }
+
+  #editFormOverlay .btn {
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    margin-right: 8px !important;
+    margin-top: 10px !important;
+  }
+   
+    #editFormOverlay .btn-success {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+    margin-right: 0 !important;
+  }
+
+  #editFormOverlay .btn-secondary {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+
+  #editFormOverlay .btn-success {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+
+  #editFormOverlay .btn-secondary {
+    width: 100% !important;
+  }
+    
+   #editFormOverlay.overlay-form {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(3px) !important;
+    z-index: 10005 !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 75px 10px 20px 10px !important;
+  }
+
+  /* Pastikan form tersembunyi jika display:none */
+  #editFormOverlay.overlay-form[style*="display: none"],
+  #editFormOverlay.overlay-form[style*="display:none"] {
+    display: none !important;
+  }
+  
+  /* Overlay Content */
+  #editFormOverlay .overlay-content {
+    width: 95% !important;
+    max-width: 500px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    max-height: calc(100vh - 95px) !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Card Header */
+  #editFormOverlay .card-header {
+    background: #3b4147 !important;
+    color: white !important;
+    border-top-left-radius: 12px !important;
+    border-top-right-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
+    flex-shrink: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1 !important;
+  }
+
+  #editFormOverlay .card-header h5 {
+    font-size: 1rem !important;
+    margin: 0 !important;
+  }
+
+  /* Card Body */
+  #editFormOverlay .card-body {
+    padding: 1rem !important;
+    overflow-y: auto !important;
+    flex-grow: 1 !important;
+  }
+
+  /* Form Layout - Full Width untuk Mobile */
+  #editFormOverlay .col-md-6 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Form Group */
+  #editFormOverlay .form-group {
+    margin-bottom: 0.9rem !important;
+  }
+
+  /* Label */
+  #editFormOverlay label {
+    font-size: 0.9rem !important;
+    margin-bottom: 4px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    display: block !important;
+  }
+
+  /* Input Form Control */
+  #editFormOverlay .form-control {
+    border-radius: 8px !important;
+    border: 1px solid #ccc !important;
+    font-size: 0.9rem !important;
+    padding: 10px 12px !important;
+    width: 100% !important;
+  }
+
+  /* Button Styling */
+  #editFormOverlay .btn {
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    margin-top: 10px !important;
+  }
+
+  #editFormOverlay .btn-success {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+    margin-right: 0 !important;
+  }
+
+  #editFormOverlay .btn-secondary {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  /* Text Center untuk Button Container */
+  #editFormOverlay .text-center {
+    margin-top: 1rem !important;
+  }
+/* ===============================================
+   🌙 DARK MODE
+   =============================================== */
+body.dark-mode .table-responsive-custom {
+  background: #242526;
+  box-shadow: 0 2px 8px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .table th {
+  background: linear-gradient(135deg, #1f1f1f, #333);
+  color: #ddd;
+}
+
+body.dark-mode .table td {
+  background: #2b2b2b;
+  color: #e5e5e5;
+  border-color: #444;
+}
+
+body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .table tbody tr:hover {
+  background-color: #333;
+}
+
+
+}
+
+
+
+
+</style>

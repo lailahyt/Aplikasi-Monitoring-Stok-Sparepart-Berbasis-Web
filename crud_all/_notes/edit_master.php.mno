@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_Recordset1" value="name:part_number;datatype:string,name:nama_sparepart;datatype:string,name:jenis_part;datatype:string,name:atm;datatype:string" />
+</info>
